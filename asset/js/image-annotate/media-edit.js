@@ -1,11 +1,13 @@
 $(document).ready(function() {
 
+    const image = $('#image-annotate-image');
+
     // Initiate Annotorious on load.
     var anno = Annotorious.init({
-        image: document.getElementById('image-annotate-image'),
+        image: image[0],
         widgets: ['COMMENT'], // Remove TAG widget by setting only COMMENT
     });
-    anno.setAnnotations($('image-annotate-annotations').val());
+    anno.setAnnotations(image.data('annotations'));
 
     // Package the annotations on submit.
     $('.resource-form').on('submit', function(e) {
