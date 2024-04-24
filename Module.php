@@ -1,6 +1,7 @@
 <?php
 namespace ImageAnnotate;
 
+use ImageAnnotate\Entity\ImageAnnotateMedia;
 use Omeka\Module\AbstractModule;
 use Laminas\EventManager\Event;
 use Laminas\EventManager\SharedEventManagerInterface;
@@ -23,10 +24,22 @@ class Module extends AbstractModule
 
     public function install(ServiceLocatorInterface $services)
     {
+        $sql = <<<'SQL'
+CREATE TABLE image_annotate_media (id INT UNSIGNED AUTO_INCREMENT NOT NULL, media_id INT NOT NULL, annotations LONGTEXT NOT NULL COMMENT '(DC2Type:json)', UNIQUE INDEX UNIQ_B55D6BEAEA9FDD75 (media_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;
+ALTER TABLE image_annotate_media ADD CONSTRAINT FK_B55D6BEAEA9FDD75 FOREIGN KEY (media_id) REFERENCES media (id) ON DELETE CASCADE;
+SQL;
+        $conn = $services->get('Omeka\Connection');
+        $conn->exec('SET FOREIGN_KEY_CHECKS=0;');
+        $conn->exec($sql);
+        $conn->exec('SET FOREIGN_KEY_CHECKS=1;');
     }
 
     public function uninstall(ServiceLocatorInterface $services)
     {
+        $conn = $services->get('Omeka\Connection');
+        $conn->exec('SET FOREIGN_KEY_CHECKS=0;');
+        $conn->exec('DROP TABLE IF EXISTS image_annotate_media;');
+        $conn->exec('SET FOREIGN_KEY_CHECKS=1;');
     }
 
     public function attachListeners(SharedEventManagerInterface $sharedEventManager)
@@ -106,8 +119,12 @@ class Module extends AbstractModule
                     return;
                 }
 
-                // @todo: Get annotations from data store.
-                $annotations = [];
+                // Get annotations, if any.
+                $entityManager = $this->getServiceLocator()->get('Omeka\EntityManager');
+                $imageAnnotateMedia = $entityManager
+                    ->getRepository('ImageAnnotate\Entity\ImageAnnotateMedia')
+                    ->findOneBy(['media' => $media->id()]);
+                $annotations = $imageAnnotateMedia ? $imageAnnotateMedia->getAnnotations() : [];
 
                 $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
                 $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
@@ -132,9 +149,26 @@ class Module extends AbstractModule
             'api.update.post',
             function (Event $event) {
                 $requestData = $event->getParam('request')->getContent();
-                $annotations = json_decode($requestData['image_annotate_annotations'] ?? '[]', true);
-                echo '<pre>';print_r($annotations);exit;
-                // @todo: Persist annotations in data store.
+                if (!isset($requestData['image_annotate_annotations'])) {
+                    return;
+                }
+                $annotations = json_decode($requestData['image_annotate_annotations'], true);
+                if (!is_array($annotations)) {
+                    return;
+                }
+
+                $entityManager = $this->getServiceLocator()->get('Omeka\EntityManager');
+                $media = $event->getParam('response')->getContent();
+                $imageAnnotateMedia = $entityManager
+                    ->getRepository('ImageAnnotate\Entity\ImageAnnotateMedia')
+                    ->findOneBy(['media' => $media->getId()]);
+                if (!$imageAnnotateMedia) {
+                    $imageAnnotateMedia = new ImageAnnotateMedia;
+                    $imageAnnotateMedia->setMedia($media);
+                }
+                $imageAnnotateMedia->setAnnotations($annotations);
+                $entityManager->persist($imageAnnotateMedia);
+                $entityManager->flush();
             }
         );
     }
