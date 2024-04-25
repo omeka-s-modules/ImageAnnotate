@@ -26,4 +26,9 @@ return [
             sprintf('%s/../data/doctrine-proxies', __DIR__),
         ],
     ],
+    'resource_page_block_layouts' => [
+        'factories' => [
+            'imageAnnotateMedia' => Service\Site\ResourcePageBlockLayout\ImageAnnotateMediaFactory::class,
+        ],
+    ],
 ];

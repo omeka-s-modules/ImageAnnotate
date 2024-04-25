@@ -11,7 +11,13 @@ $(document).ready(function() {
 
     // Package the annotations on submit.
     $('.resource-form').on('submit', function(e) {
-        $('#image-annotate-annotations').val(JSON.stringify(anno.getAnnotations()));
+        const input = $('<input>', {
+            id: 'image-annotate-annotations',
+            name: 'image_annotate_annotations',
+            type: 'hidden',
+            value: JSON.stringify(anno.getAnnotations())
+        });
+        $('#image-annotate-container').append(input);
     });
 
 });

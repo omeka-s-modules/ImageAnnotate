@@ -93,6 +93,7 @@ SQL;
         if (!$media->hasThumbnails()) {
             return;
         }
+
         // Get annotations, if any.
         $imageAnnotateMedia = $this->getImageAnnotateMedia($media->id());
         $annotations = $imageAnnotateMedia ? $imageAnnotateMedia->getAnnotations() : [];
@@ -117,6 +118,7 @@ SQL;
         if (!$media->hasThumbnails()) {
             return;
         }
+
         // Get annotations, if any.
         $imageAnnotateMedia = $this->getImageAnnotateMedia($media->id());
         $annotations = $imageAnnotateMedia ? $imageAnnotateMedia->getAnnotations() : [];
@@ -124,20 +126,13 @@ SQL;
             return;
         }
 
-        $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
-        $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
         $view->headScript()->appendFile($view->assetUrl('js/image-annotate/media-show.js', 'ImageAnnotate'));
-
         echo sprintf(
-            '<div id="image-annotate-section" class="section">
-                <div id="image-annotate-container">
-                    <div id="image-annotate-image-wrapper">
-                        <img id="image-annotate-image" src="%s" data-annotations="%s">
-                    </div>
-                </div>
-            </div>',
-            $view->escapeHtml($media->thumbnailUrl('large')),
-            $view->escapeHtml(json_encode($annotations))
+            '<div id="image-annotate-section" class="section">%s</div>',
+            $view->partial('common/image-annotate', [
+                'imageSrc' => $media->thumbnailUrl('large'),
+                'imageAnnotations' => $annotations,
+            ])
         );
     }
 
@@ -153,6 +148,7 @@ SQL;
         if (!$media->hasThumbnails()) {
             return;
         }
+
         $sectionNavs = $event->getParam('section_nav');
         $sectionNavs['image-annotate-section'] = $view->translate('Annotate image');
         $event->setParam('section_nav', $sectionNavs);
@@ -170,26 +166,20 @@ SQL;
         if (!$media->hasThumbnails()) {
             return;
         }
+
         // Get annotations, if any.
         $imageAnnotateMedia = $this->getImageAnnotateMedia($media->id());
         $annotations = $imageAnnotateMedia ? $imageAnnotateMedia->getAnnotations() : [];
 
-        $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
-        $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
         $view->headScript()->appendFile($view->assetUrl('js/image-annotate/media-edit.js', 'ImageAnnotate'));
-
         echo sprintf(
-            '<div id="image-annotate-section" class="section">
-                <div id="image-annotate-container">
-                    <div id="image-annotate-image-wrapper">
-                        <img id="image-annotate-image" src="%s" data-annotations="%s">
-                    </div>
-                    <input id="image-annotate-annotations" name="image_annotate_annotations" type="hidden">
-                </div>
-            </div>',
-            $view->escapeHtml($media->thumbnailUrl('large')),
-            $view->escapeHtml(json_encode($annotations))
+            '<div id="image-annotate-section" class="section">%s</div>',
+            $view->partial('common/image-annotate', [
+                'imageSrc' => $media->thumbnailUrl('large'),
+                'imageAnnotations' => $annotations,
+            ])
         );
+
     }
 
     /**
