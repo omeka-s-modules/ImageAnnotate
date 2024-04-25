@@ -47,129 +47,221 @@ SQL;
         $sharedEventManager->attach(
             'Omeka\Controller\Admin\Media',
             'view.show.section_nav',
-            function (Event $event) {
-                $view = $event->getTarget();
-                $media = $view->media;
-                if (!$media->hasThumbnails()) {
-                    return;
-                }
-                // @todo: Get annotations from data store.
-                $annotations = [];
-                if (!$annotations) {
-                    return;
-                }
-                $sectionNavs = $event->getParam('section_nav');
-                $sectionNavs['image-annotate-section'] = $view->translate('Image annotations');
-                $event->setParam('section_nav', $sectionNavs);
-            }
+            [$this, 'viewShowSectionNav']
         );
         $sharedEventManager->attach(
             'Omeka\Controller\Admin\Media',
             'view.show.after',
-            function (Event $event) {
-                $view = $event->getTarget();
-                $media = $view->media;
-                if (!$media->hasThumbnails()) {
-                    return;
-                }
-                // @todo: Get annotations from data store.
-                $annotations = [];
-                if (!$annotations) {
-                    return;
-                }
-
-                $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
-                $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
-                $view->headScript()->appendFile($view->assetUrl('js/image-annotate/media-show.js', 'ImageAnnotate'));
-
-                echo sprintf(
-                    '<div id="image-annotate-section" class="section">
-                        <div id="image-annotate-container">
-                            <div id="image-annotate-image-wrapper">
-                                <img id="image-annotate-image" src="%s" data-annotations="%s">
-                            </div>
-                        </div>
-                    </div>',
-                    $view->escapeHtml($media->thumbnailUrl('large')),
-                    $view->escapeHtml(json_encode($annotations))
-                );
-            }
+            [$this, 'viewShowAfter']
         );
         $sharedEventManager->attach(
             'Omeka\Controller\Admin\Media',
             'view.edit.section_nav',
-            function (Event $event) {
-                $view = $event->getTarget();
-                $media = $view->media;
-                if (!$media->hasThumbnails()) {
-                    return;
-                }
-                $sectionNavs = $event->getParam('section_nav');
-                $sectionNavs['image-annotate-section'] = $view->translate('Image annotate');
-                $event->setParam('section_nav', $sectionNavs);
-            }
+            [$this, 'viewEditSectionNav']
         );
         $sharedEventManager->attach(
             'Omeka\Controller\Admin\Media',
             'view.edit.form.after',
-            function (Event $event) {
-                $view = $event->getTarget();
-                $media = $view->media;
-                if (!$media->hasThumbnails()) {
-                    return;
-                }
-
-                // Get annotations, if any.
-                $entityManager = $this->getServiceLocator()->get('Omeka\EntityManager');
-                $imageAnnotateMedia = $entityManager
-                    ->getRepository('ImageAnnotate\Entity\ImageAnnotateMedia')
-                    ->findOneBy(['media' => $media->id()]);
-                $annotations = $imageAnnotateMedia ? $imageAnnotateMedia->getAnnotations() : [];
-
-                $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
-                $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
-                $view->headScript()->appendFile($view->assetUrl('js/image-annotate/media-edit.js', 'ImageAnnotate'));
-
-                echo sprintf(
-                    '<div id="image-annotate-section" class="section">
-                        <div id="image-annotate-container">
-                            <div id="image-annotate-image-wrapper">
-                                <img id="image-annotate-image" src="%s" data-annotations="%s">
-                            </div>
-                            <input id="image-annotate-annotations" name="image_annotate_annotations" type="hidden">
-                        </div>
-                    </div>',
-                    $view->escapeHtml($media->thumbnailUrl('large')),
-                    $view->escapeHtml(json_encode($annotations))
-                );
-            }
+            [$this, 'viewEditFormAfter']
         );
         $sharedEventManager->attach(
             'Omeka\Api\Adapter\MediaAdapter',
             'api.update.post',
-            function (Event $event) {
-                $requestData = $event->getParam('request')->getContent();
-                if (!isset($requestData['image_annotate_annotations'])) {
-                    return;
-                }
-                $annotations = json_decode($requestData['image_annotate_annotations'], true);
-                if (!is_array($annotations)) {
-                    return;
-                }
-
-                $entityManager = $this->getServiceLocator()->get('Omeka\EntityManager');
-                $media = $event->getParam('response')->getContent();
-                $imageAnnotateMedia = $entityManager
-                    ->getRepository('ImageAnnotate\Entity\ImageAnnotateMedia')
-                    ->findOneBy(['media' => $media->getId()]);
-                if (!$imageAnnotateMedia) {
-                    $imageAnnotateMedia = new ImageAnnotateMedia;
-                    $imageAnnotateMedia->setMedia($media);
-                }
-                $imageAnnotateMedia->setAnnotations($annotations);
-                $entityManager->persist($imageAnnotateMedia);
-                $entityManager->flush();
-            }
+            [$this, 'apiUpdatePost']
         );
+        $sharedEventManager->attach(
+            '*',
+            'api.context',
+            [$this, 'apiContext']
+        );
+        $sharedEventManager->attach(
+            'Omeka\Api\Representation\MediaRepresentation',
+            'rep.resource.json',
+            [$this, 'repResourceJson']
+        );
+    }
+
+    /**
+     * Add section nav to media show page.
+     *
+     * @param Event $event
+     */
+    public function viewShowSectionNav(Event $event)
+    {
+        $view = $event->getTarget();
+        $media = $view->media;
+        if (!$media->hasThumbnails()) {
+            return;
+        }
+        // Get annotations, if any.
+        $imageAnnotateMedia = $this->getImageAnnotateMedia($media->id());
+        $annotations = $imageAnnotateMedia ? $imageAnnotateMedia->getAnnotations() : [];
+        if (!$annotations) {
+            return;
+        }
+
+        $sectionNavs = $event->getParam('section_nav');
+        $sectionNavs['image-annotate-section'] = $view->translate('Image annotations');
+        $event->setParam('section_nav', $sectionNavs);
+    }
+
+    /**
+     * Add section to media show page.
+     *
+     * @param Event $event
+     */
+    public function viewShowAfter(Event $event)
+    {
+        $view = $event->getTarget();
+        $media = $view->media;
+        if (!$media->hasThumbnails()) {
+            return;
+        }
+        // Get annotations, if any.
+        $imageAnnotateMedia = $this->getImageAnnotateMedia($media->id());
+        $annotations = $imageAnnotateMedia ? $imageAnnotateMedia->getAnnotations() : [];
+        if (!$annotations) {
+            return;
+        }
+
+        $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
+        $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
+        $view->headScript()->appendFile($view->assetUrl('js/image-annotate/media-show.js', 'ImageAnnotate'));
+
+        echo sprintf(
+            '<div id="image-annotate-section" class="section">
+                <div id="image-annotate-container">
+                    <div id="image-annotate-image-wrapper">
+                        <img id="image-annotate-image" src="%s" data-annotations="%s">
+                    </div>
+                </div>
+            </div>',
+            $view->escapeHtml($media->thumbnailUrl('large')),
+            $view->escapeHtml(json_encode($annotations))
+        );
+    }
+
+    /**
+     * Add section nav to media edit page.
+     *
+     * @param Event $event
+     */
+    public function viewEditSectionNav(Event $event)
+    {
+        $view = $event->getTarget();
+        $media = $view->media;
+        if (!$media->hasThumbnails()) {
+            return;
+        }
+        $sectionNavs = $event->getParam('section_nav');
+        $sectionNavs['image-annotate-section'] = $view->translate('Annotate image');
+        $event->setParam('section_nav', $sectionNavs);
+    }
+
+    /**
+     * Add section to media edit page.
+     *
+     * @param Event $event
+     */
+    public function viewEditFormAfter(Event $event)
+    {
+        $view = $event->getTarget();
+        $media = $view->media;
+        if (!$media->hasThumbnails()) {
+            return;
+        }
+        // Get annotations, if any.
+        $imageAnnotateMedia = $this->getImageAnnotateMedia($media->id());
+        $annotations = $imageAnnotateMedia ? $imageAnnotateMedia->getAnnotations() : [];
+
+        $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
+        $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
+        $view->headScript()->appendFile($view->assetUrl('js/image-annotate/media-edit.js', 'ImageAnnotate'));
+
+        echo sprintf(
+            '<div id="image-annotate-section" class="section">
+                <div id="image-annotate-container">
+                    <div id="image-annotate-image-wrapper">
+                        <img id="image-annotate-image" src="%s" data-annotations="%s">
+                    </div>
+                    <input id="image-annotate-annotations" name="image_annotate_annotations" type="hidden">
+                </div>
+            </div>',
+            $view->escapeHtml($media->thumbnailUrl('large')),
+            $view->escapeHtml(json_encode($annotations))
+        );
+    }
+
+    /**
+     * Persist media annotations.
+     *
+     * @param Event $event
+     */
+    public function apiUpdatePost(Event $event)
+    {
+        $requestData = $event->getParam('request')->getContent();
+        if (!isset($requestData['image_annotate_annotations'])) {
+            return;
+        }
+        $annotations = json_decode($requestData['image_annotate_annotations'], true);
+        if (!is_array($annotations)) {
+            return;
+        }
+
+        $media = $event->getParam('response')->getContent();
+        $imageAnnotateMedia = $this->getImageAnnotateMedia($media->getId());
+        if (!$imageAnnotateMedia) {
+            $imageAnnotateMedia = new ImageAnnotateMedia;
+            $imageAnnotateMedia->setMedia($media);
+        }
+        $imageAnnotateMedia->setAnnotations($annotations);
+        $entityManager = $this->getServiceLocator()->get('Omeka\EntityManager');
+        $entityManager->persist($imageAnnotateMedia);
+        $entityManager->flush();
+    }
+
+    /**
+     * Get ImageAnnotateMedia entity.
+     *
+     * @param int $mediaId
+     * @return ImageAnnotateMedia
+     */
+    public function getImageAnnotateMedia(int $mediaId) : ImageAnnotateMedia
+    {
+        return $this->getServiceLocator()
+            ->get('Omeka\EntityManager')
+            ->getRepository('ImageAnnotate\Entity\ImageAnnotateMedia')
+            ->findOneBy(['media' => $mediaId]);
+    }
+
+    /**
+     * Add "o-module-item_annotate" namespace to the API @context.
+     *
+     * @param Event $event
+     */
+    public function apiContext(Event $event)
+    {
+        $context = $event->getParam('context');
+        $context['o-module-item_annotate'] = 'http://omeka.org/s/vocabs/module/item_annotate#';
+        $event->setParam('context', $context);
+    }
+
+    /**
+     * Add annotations to the API JSON-LD.
+     *
+     * @param Event $event
+     */
+    public function repResourceJson(Event $event)
+    {
+        $media = $event->getTarget();
+        $jsonLd = $event->getParam('jsonLd');
+        // Get annotations, if any.
+        $imageAnnotateMedia = $this->getImageAnnotateMedia($media->id());
+        $annotations = $imageAnnotateMedia ? $imageAnnotateMedia->getAnnotations() : [];
+        if (!$annotations) {
+            return;
+        }
+        $jsonLd['o-module-image_annotate:annotation'] = $annotations;
+        $event->setParam('jsonLd', $jsonLd);
     }
 }
