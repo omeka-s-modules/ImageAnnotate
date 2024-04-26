@@ -35,10 +35,12 @@ class ImageAnnotateMedia implements ResourcePageBlockLayoutInterface
             return '';
         }
 
-        $view->headScript()->appendFile($view->assetUrl('js/image-annotate/media-show.js', 'ImageAnnotate'));
+        $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
+        $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
+        $view->headScript()->appendFile($view->assetUrl('js/image-annotate/show-annotations.js', 'ImageAnnotate'));
         return $view->partial('common/image-annotate', [
             'imageSrc' => $resource->thumbnailUrl('large'),
-            'imageAnnotations' => $annotations,
+            'annotations' => $annotations,
         ]);
     }
 }

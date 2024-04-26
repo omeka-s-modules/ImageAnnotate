@@ -1,9 +1,7 @@
-<?php
-$this->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
-$this->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
-?>
-<div id="image-annotate-container">
-    <div id="image-annotate-image-wrapper">
-        <img id="image-annotate-image" src="<?php echo $this->escapeHtml($imageSrc); ?>" data-annotations="<?php echo $this->escapeHtml(json_encode($imageAnnotations)); ?>">
+<div class="image-annotate-container"
+    data-annotations="<?php echo $this->escapeHtml(json_encode($annotations)); ?>"
+    data-input-name="<?php echo $this->escapeHtml($inputName ?? ''); ?>">
+    <div class="image-annotate-image-wrapper">
+        <img class="image-annotate-image" src="<?php echo $this->escapeHtml($imageSrc); ?>">
     </div>
 </div>

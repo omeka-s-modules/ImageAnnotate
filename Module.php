@@ -126,12 +126,14 @@ SQL;
             return;
         }
 
-        $view->headScript()->appendFile($view->assetUrl('js/image-annotate/media-show.js', 'ImageAnnotate'));
+        $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
+        $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
+        $view->headScript()->appendFile($view->assetUrl('js/image-annotate/show-annotations.js', 'ImageAnnotate'));
         echo sprintf(
             '<div id="image-annotate-section" class="section">%s</div>',
             $view->partial('common/image-annotate', [
                 'imageSrc' => $media->thumbnailUrl('large'),
-                'imageAnnotations' => $annotations,
+                'annotations' => $annotations,
             ])
         );
     }
@@ -171,12 +173,15 @@ SQL;
         $imageAnnotateMedia = $this->getImageAnnotateMedia($media->id());
         $annotations = $imageAnnotateMedia ? $imageAnnotateMedia->getAnnotations() : [];
 
-        $view->headScript()->appendFile($view->assetUrl('js/image-annotate/media-edit.js', 'ImageAnnotate'));
+        $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
+        $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
+        $view->headScript()->appendFile($view->assetUrl('js/image-annotate/edit-annotations.js', 'ImageAnnotate'));
         echo sprintf(
             '<div id="image-annotate-section" class="section">%s</div>',
             $view->partial('common/image-annotate', [
                 'imageSrc' => $media->thumbnailUrl('large'),
-                'imageAnnotations' => $annotations,
+                'annotations' => $annotations,
+                'inputName' => sprintf('image_annotate_annotations[%s]', $media->id()),
             ])
         );
 
@@ -190,15 +195,14 @@ SQL;
     public function apiUpdatePost(Event $event)
     {
         $requestData = $event->getParam('request')->getContent();
-        if (!isset($requestData['image_annotate_annotations'])) {
-            return;
-        }
-        $annotations = json_decode($requestData['image_annotate_annotations'], true);
+        $media = $event->getParam('response')->getContent();
+
+        $annotations = $requestData['image_annotate_annotations'][$media->getId()] ?? null;
+        $annotations = json_decode($annotations, true);
         if (!is_array($annotations)) {
             return;
         }
 
-        $media = $event->getParam('response')->getContent();
         $imageAnnotateMedia = $this->getImageAnnotateMedia($media->getId());
         if (!$imageAnnotateMedia) {
             $imageAnnotateMedia = new ImageAnnotateMedia;
