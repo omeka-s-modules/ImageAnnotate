@@ -29,6 +29,7 @@ return [
     'resource_page_block_layouts' => [
         'factories' => [
             'imageAnnotateMedia' => Service\Site\ResourcePageBlockLayout\ImageAnnotateMediaFactory::class,
+            'imageAnnotateItem' => Service\Site\ResourcePageBlockLayout\ImageAnnotateItemFactory::class,
         ],
     ],
 ];

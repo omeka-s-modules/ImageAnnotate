@@ -220,7 +220,7 @@ SQL;
      * @param int $mediaId
      * @return ImageAnnotateMedia
      */
-    public function getImageAnnotateMedia(int $mediaId) : ImageAnnotateMedia
+    public function getImageAnnotateMedia(int $mediaId) : ?ImageAnnotateMedia
     {
         return $this->getServiceLocator()
             ->get('Omeka\EntityManager')
