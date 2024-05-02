@@ -4,7 +4,6 @@ $(document).ready(function() {
         const container = $(this);
         const image = container.find('.image-annotate-image');
         const annotations = container.data('annotations');
-        const inputName = container.data('inputName');
         // Initiate Annotorious on load.
         const anno = Annotorious.init({
             image: image[0],
@@ -14,12 +13,8 @@ $(document).ready(function() {
 
         // Package the annotations on submit.
         container.closest('form').on('submit', function(e) {
-            const input = $('<input>', {
-                type: 'hidden',
-                name: inputName,
-                value: JSON.stringify(anno.getAnnotations())
-            });
-            container.append(input);
+            container.find('input.image-annotate-annotations')
+                .val(JSON.stringify(anno.getAnnotations()));
         });
     });
 

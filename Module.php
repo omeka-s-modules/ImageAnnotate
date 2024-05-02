@@ -184,7 +184,6 @@ SQL;
                 'inputName' => sprintf('image_annotate_annotations[%s]', $media->id()),
             ])
         );
-
     }
 
     /**

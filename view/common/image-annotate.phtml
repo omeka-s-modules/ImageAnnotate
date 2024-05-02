@@ -1,7 +1,13 @@
 <div class="image-annotate-container"
-    data-annotations="<?php echo $this->escapeHtml(json_encode($annotations)); ?>"
-    data-input-name="<?php echo $this->escapeHtml($inputName ?? ''); ?>">
+    data-image-src="<?php echo $this->escapeHtml($imageSrc); ?>"
+    data-annotations="<?php echo $this->escapeHtml(json_encode($annotations)); ?>">
     <div class="image-annotate-image-wrapper">
         <img class="image-annotate-image" src="<?php echo $this->escapeHtml($imageSrc); ?>">
     </div>
+    <?php if (isset($inputName)): ?>
+    <input type="hidden"
+        class="image-annotate-annotations"
+        name="<?php echo $this->escapeHtml($inputName); ?>"
+        value="<?php echo $this->escapeHtml(json_encode($annotations)); ?>">
+    <?php endif; ?>
 </div>
