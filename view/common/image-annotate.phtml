@@ -7,7 +7,6 @@
     <?php if (isset($inputName)): ?>
     <input type="hidden"
         class="image-annotate-annotations"
-        name="<?php echo $this->escapeHtml($inputName); ?>"
-        value="<?php echo $this->escapeHtml(json_encode($annotations)); ?>">
+        name="<?php echo $this->escapeHtml($inputName); ?>">
     <?php endif; ?>
 </div>

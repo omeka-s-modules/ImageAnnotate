@@ -19,6 +19,7 @@ class ImageAnnotate extends AbstractBlockLayout implements TemplateableBlockLayo
     {
         $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
         $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
+        $view->headScript()->appendFile($view->assetUrl('js/image-annotate.js', 'ImageAnnotate'));
         $view->headScript()->appendFile($view->assetUrl('js/image-annotate/edit-annotations.js', 'ImageAnnotate'));
         $view->headScript()->appendFile($view->assetUrl('js/image-annotate/block-layout.js', 'ImageAnnotate'));
     }
@@ -29,27 +30,29 @@ class ImageAnnotate extends AbstractBlockLayout implements TemplateableBlockLayo
 
         // Get the annotations.
         $annotations = [];
-        if (isset($data['annotations'])) {
-            $annotations = $data['annotations'];
-        }
-        $annotations = json_decode($data['annotations'], true);
-        if (!is_array($annotations)) {
-            $annotations = [];
+        if (isset($data['annotations']) && is_string($data['annotations'])) {
+            $annotations = json_decode($data['annotations'], true);
         }
 
         // Get the image source.
         $attachments = $block ? $block->attachments() : [];
+        $mediaId = '';
         $imageSrc = '';
-        if ($attachments) {
-            if ($attachments[0]->media()) {
-                $imageSrc = $attachments[0]->media()->thumbnailUrl('large');
-            }
+        if ($attachments && $attachments[0]->media()) {
+            $mediaId = $attachments[0]->media()->id();
+            $imageSrc = $attachments[0]->media()->thumbnailUrl('large');
         }
 
         return sprintf(
-            '%s<a href="#" class="expand" aria-label="expand"><h4>%s</h4></a><div class="collapsible">%s</div>',
+            '%s
+            <a href="#" class="expand" aria-label="expand"><h4>%s</h4></a>
+            <div class="image-annotate-container-wrapper collapsible"
+                data-media-id-current="%s"
+                data-api-endpoint-url="%s">%s</div>',
             $view->blockAttachmentsForm($block, false, [], 1),
             $view->translate('Annotate image'),
+            $view->escapeHtml($mediaId),
+            $view->escapeHtml($view->url('api-local')),
             $view->partial('common/image-annotate', [
                 'imageSrc' => $imageSrc,
                 'annotations' => $annotations,
