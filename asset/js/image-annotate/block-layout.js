@@ -3,8 +3,8 @@ $(document).ready(function() {
 // Handle
 $('#attachment-confirm-panel button').on('click', function(e) {
     const block = $('.selecting-attachment').closest('.block');
-    if ('imageAnnotate' !== block.data('blockLayout')) {
-        return; // This is not an imageAnnotate block. Do nothing.
+    if ('imageAnnotateMedia' !== block.data('blockLayout')) {
+        return; // This is not an imageAnnotateMedia block. Do nothing.
     }
     const containerWrapper = block.find('.image-annotate-container-wrapper');
     const container = block.find('.image-annotate-container');

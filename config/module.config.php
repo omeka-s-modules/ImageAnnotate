@@ -28,7 +28,7 @@ return [
     ],
     'block_layouts' => [
         'invokables' => [
-            'imageAnnotate' => Site\BlockLayout\ImageAnnotate::class,
+            'imageAnnotateMedia' => Site\BlockLayout\ImageAnnotateMedia::class,
         ],
     ],
     'resource_page_block_layouts' => [
