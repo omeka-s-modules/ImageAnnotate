@@ -27,20 +27,17 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
     public function form(PhpRenderer $view, SiteRepresentation $site, SitePageRepresentation $page = null, SitePageBlockRepresentation $block = null)
     {
         $data = $block ? $block->data() : [];
+        $attachments = $block ? $block->attachments() : [];
 
-        // Get the annotations, if any.
         $annotations = [];
         if (isset($data['annotations']) && is_string($data['annotations'])) {
             $annotations = json_decode($data['annotations'], true);
         }
-
-        // Get the attachment media's image source and ID, if any.
-        $attachments = $block ? $block->attachments() : [];
-        $mediaId = '';
-        $imageSrc = '';
-        if ($attachments && $attachments[0]->media()) {
-            $mediaId = $attachments[0]->media()->id();
-            $imageSrc = $attachments[0]->media()->thumbnailUrl('large');
+        $mediaId = null;
+        $imageSrc = null;
+        if ($attachments && $media = $attachments[0]->media()) {
+            $mediaId = $media->id();
+            $imageSrc = $media->thumbnailUrl('large');
         }
 
         return sprintf(
@@ -69,18 +66,15 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
         $view->headScript()->appendFile($view->assetUrl('js/image-annotate/show-annotations.js', 'ImageAnnotate'));
 
         $data = $block ? $block->data() : [];
+        $attachments = $block ? $block->attachments() : [];
 
-        // Get the annotations, if any.
         $annotations = [];
         if (isset($data['annotations']) && is_string($data['annotations'])) {
             $annotations = json_decode($data['annotations'], true);
         }
-
-        // Get the attachment media's image source, if any.
-        $attachments = $block ? $block->attachments() : [];
-        $imageSrc = '';
-        if ($attachments && $attachments[0]->media()) {
-            $imageSrc = $attachments[0]->media()->thumbnailUrl('large');
+        $imageSrc = null;
+        if ($attachments && $media = $attachments[0]->media()) {
+            $imageSrc = $media->thumbnailUrl('large');
         }
 
         return $view->partial('common/image-annotate', [
