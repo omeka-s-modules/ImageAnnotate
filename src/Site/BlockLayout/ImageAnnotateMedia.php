@@ -33,6 +33,7 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
         if (isset($data['annotations']) && is_string($data['annotations'])) {
             $annotations = json_decode($data['annotations'], true);
         }
+
         $mediaId = null;
         $imageSrc = null;
         if ($attachments && $media = $attachments[0]->media()) {
@@ -58,7 +59,7 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
         );
     }
 
-    public function render(PhpRenderer $view, SitePageBlockRepresentation $block, $templateViewScript = 'common/block-layout/image-annotate')
+    public function render(PhpRenderer $view, SitePageBlockRepresentation $block, $templateViewScript = 'common/block-layout/image-annotate-media')
     {
         $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
         $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
