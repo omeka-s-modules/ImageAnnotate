@@ -45,6 +45,8 @@ let selectingAssetElement;
 $('#content').on('click', '.asset-form-select', function () {
     selectingAssetElement = $(this).closest('.asset-form-element');
 });
+// Reduce the size of all selected asset images.
+$('#content').find('.selected-asset-image').css('max-width', '100px');
 // Handle an asset click for the imageAnnotateAsset block.
 $('#content').on('click', '.asset-list .select-asset', function (e) {
     const block = selectingAssetElement.closest('.block');
@@ -57,6 +59,8 @@ $('#content').on('click', '.asset-list .select-asset', function (e) {
     const assetId = parseInt(block.find('input[name$="[asset_id]"]').val(), 10);
     const assetIdCurrent = parseInt(containerWrapper.data('assetIdCurrent'), 10);
     const anno = container.data('anno');
+    // Reduce the size of the selected asset image.
+    block.find('.selected-asset-image').css('max-width', '100px');
     if (assetId === assetIdCurrent) {
         // This is the same asset. Do nothing.
         return;
