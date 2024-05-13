@@ -24,6 +24,7 @@ const ImageAnnotate = {
         // Initiate Annotorious on load.
         const anno = Annotorious.init({
             image: image[0],
+            fragmentUnit: 'percent', // Use percent in the event the image dimensions change
             widgets: ['COMMENT'], // Remove TAG widget by setting only COMMENT
         });
         container.data('anno', anno);
