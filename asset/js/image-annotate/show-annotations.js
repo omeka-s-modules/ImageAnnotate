@@ -1,9 +1,9 @@
 $(document).ready(function() {
 
     $('.image-annotate-container').each(function() {
-        const thisContainer = $(this);
-        const annotations = thisContainer.data('annotations');
-        ImageAnnotate.initShow(thisContainer, annotations);
+        const container = $(this);
+        const annotations = container.data('annotations');
+        ImageAnnotate.initShow(container, annotations);
     });
 
 });

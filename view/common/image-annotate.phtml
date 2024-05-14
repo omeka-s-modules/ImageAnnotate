@@ -1,12 +1,17 @@
+<?php
+$isEdit = isset($inputName);
+$canReset = (bool) $annotations;
+?>
 <div class="image-annotate-container"
     data-image-src="<?php echo $this->escapeHtml($imageSrc); ?>"
     data-annotations="<?php echo $this->escapeHtml(json_encode($annotations)); ?>">
     <div class="image-annotate-image-wrapper">
         <img class="image-annotate-image" src="<?php echo $this->escapeHtml($imageSrc); ?>">
     </div>
-    <?php if (isset($inputName)): ?>
-    <input type="hidden"
-        class="image-annotate-annotations"
-        name="<?php echo $this->escapeHtml($inputName); ?>">
+    <?php if ($isEdit && $canReset): ?>
+    <button type="button" class="image-annotate-reset-button"><?php echo $this->translate('Reset annotations'); ?></button>
+    <?php endif; ?>
+    <?php if ($isEdit): ?>
+    <input type="hidden" class="image-annotate-annotations" name="<?php echo $this->escapeHtml($inputName); ?>">
     <?php endif; ?>
 </div>

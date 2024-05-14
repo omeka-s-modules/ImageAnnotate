@@ -12,7 +12,6 @@ $('#attachment-confirm-panel button').on('click', function(e) {
     const mediaId = parseInt(block.find('input.media').val(), 10);
     const mediaIdCurrent = parseInt(containerWrapper.data('mediaIdCurrent'), 10);
     const apiEndpointUrl = containerWrapper.data('apiEndpointUrl');
-    const anno = container.data('anno');
     if (!mediaId) {
         // This item has no media.
         image.off('load');
@@ -26,16 +25,7 @@ $('#attachment-confirm-panel button').on('click', function(e) {
     }
     // Get the large thumbnail URL from the API.
     $.get(`${apiEndpointUrl}/media/${mediaId}`, function(data) {
-        // First, remove all load event handlers to prevent triggering multiple.
-        // Then, on image load, destroy the current annotation interface and
-        // initialize a new one.
-        image.off('load');
-        image.on('load', function() {
-            if (anno) anno.destroy();
-            ImageAnnotate.initEdit(container, []);
-        });
-        // Load the new image.
-        image.attr('src', data['thumbnail_display_urls']['large']);
+        ImageAnnotate.reinitEdit(container, [], data['thumbnail_display_urls']['large']);
         containerWrapper.data('mediaIdCurrent', mediaId);
     });
 });
@@ -45,8 +35,10 @@ let selectingAssetElement;
 $('#content').on('click', '.asset-form-select', function () {
     selectingAssetElement = $(this).closest('.asset-form-element');
 });
+
 // Reduce the size of all selected asset images.
 $('#content').find('.selected-asset-image').css('max-width', '100px');
+
 // Handle an asset click for the imageAnnotateAsset block.
 $('#content').on('click', '.asset-list .select-asset', function (e) {
     const block = selectingAssetElement.closest('.block');
@@ -55,26 +47,15 @@ $('#content').on('click', '.asset-list .select-asset', function (e) {
     }
     const containerWrapper = block.find('.image-annotate-container-wrapper');
     const container = block.find('.image-annotate-container');
-    const image = block.find('img.image-annotate-image');
     const assetId = parseInt(block.find('input[name$="[asset_id]"]').val(), 10);
     const assetIdCurrent = parseInt(containerWrapper.data('assetIdCurrent'), 10);
-    const anno = container.data('anno');
     // Reduce the size of the selected asset image.
     block.find('.selected-asset-image').css('max-width', '100px');
     if (assetId === assetIdCurrent) {
         // This is the same asset. Do nothing.
         return;
     }
-    // First, remove all load event handlers to prevent triggering multiple.
-    // Then, on image load, destroy the current annotation interface and
-    // initialize a new one.
-    image.off('load');
-    image.on('load', function() {
-        if (anno) anno.destroy();
-        ImageAnnotate.initEdit(container, []);
-    });
-    // Load the new image.
-    image.attr('src', block.find('.selected-asset-image').attr('src'));
+    ImageAnnotate.reinitEdit(container, [], block.find('.selected-asset-image').attr('src'));
     containerWrapper.data('assetIdCurrent', assetId);
     // Unset the element that's selecting the asset.
     selectingAssetElement = null;
