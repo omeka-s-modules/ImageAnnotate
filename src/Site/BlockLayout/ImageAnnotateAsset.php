@@ -53,13 +53,18 @@ class ImageAnnotateAsset extends AbstractBlockLayout implements TemplateableBloc
                 %s
             </div>
             <a href="#" class="expand" aria-label="expand"><h4>%s</h4></a>
-            <div class="image-annotate-container-wrapper collapsible" data-asset-id-current="%s">
+            <div class="image-annotate-container-wrapper collapsible"
+                data-asset-id-original="%s"
+                data-asset-id-current="%s"
+                data-api-endpoint-url="%s">
                 %s
             </div>',
             $view->translate('Asset'),
             $view->formElement($assetElement),
             $view->translate('Annotate image'),
             $view->escapeHtml($assetId),
+            $view->escapeHtml($assetId),
+            $view->escapeHtml($view->url('api-local')),
             $view->partial('common/image-annotate', [
                 'imageSrc' => $imageSrc,
                 'annotations' => $annotations,

@@ -34,9 +34,11 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
             $annotations = json_decode($data['annotations'], true);
         }
 
+        $itemId = null;
         $mediaId = null;
         $imageSrc = null;
         if ($attachments && $media = $attachments[0]->media()) {
+            $itemId = $attachments[0]->item()->id();
             $mediaId = $media->id();
             $imageSrc = $media->thumbnailUrl('large');
         }
@@ -44,11 +46,17 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
         return sprintf(
             '%s
             <a href="#" class="expand" aria-label="expand"><h4>%s</h4></a>
-            <div class="image-annotate-container-wrapper collapsible" data-media-id-current="%s" data-api-endpoint-url="%s">
+            <div class="image-annotate-container-wrapper collapsible"
+                data-item-id-original="%s"
+                data-media-id-original="%s"
+                data-media-id-current="%s"
+                data-api-endpoint-url="%s">
                 %s
             </div>',
             $view->blockAttachmentsForm($block, false, [], 1),
             $view->translate('Annotate image'),
+            $view->escapeHtml($itemId),
+            $view->escapeHtml($mediaId),
             $view->escapeHtml($mediaId),
             $view->escapeHtml($view->url('api-local')),
             $view->partial('common/image-annotate', [

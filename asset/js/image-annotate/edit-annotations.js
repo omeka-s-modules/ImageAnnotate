@@ -30,6 +30,7 @@ $(document).ready(function() {
         const imageSrc = container.data('imageSrc');
         const annotations = container.data('annotations');
         ImageAnnotate.reinitEdit(container, annotations, imageSrc);
+        container.trigger('o-module-image_annotate:reset');
     });
 
 });
