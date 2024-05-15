@@ -4,7 +4,8 @@ $(document).ready(function() {
     $('.image-annotate-container').each(function() {
         const container = $(this);
         const annotations = container.data('annotations');
-        ImageAnnotate.initEdit(container, annotations);
+        const imageSrc = container.data('imageSrc');
+        ImageAnnotate.initEdit(container, annotations, imageSrc);
     });
 
     // Package the annotations on form submit.
@@ -27,9 +28,9 @@ $(document).ready(function() {
     $('.image-annotate-reset-button').on('click', function(e) {
         e.preventDefault();
         const container = $(this).closest('.image-annotate-container');
-        const imageSrc = container.data('imageSrc');
         const annotations = container.data('annotations');
-        ImageAnnotate.reinitEdit(container, annotations, imageSrc);
+        const imageSrc = container.data('imageSrc');
+        ImageAnnotate.initEdit(container, annotations, imageSrc);
         container.trigger('o-module-image_annotate:reset');
     });
 

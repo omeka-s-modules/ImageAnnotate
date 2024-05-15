@@ -25,7 +25,7 @@ $('#attachment-confirm-panel button').on('click', function(e) {
     }
     // Get the large thumbnail URL from the API.
     $.get(`${apiEndpointUrl}/media/${mediaId}`, function(data) {
-        ImageAnnotate.reinitEdit(container, [], data['thumbnail_display_urls']['large']);
+        ImageAnnotate.initEdit(container, [], data['thumbnail_display_urls']['large']);
         containerWrapper.data('mediaIdCurrent', mediaId);
     });
 });
@@ -53,7 +53,7 @@ $('#content').on('click', '.asset-list .select-asset', function (e) {
         // This is the same asset. Do nothing.
         return;
     }
-    ImageAnnotate.reinitEdit(container, [], block.find('.selected-asset-image').attr('src'));
+    ImageAnnotate.initEdit(container, [], block.find('.selected-asset-image').attr('src'));
     containerWrapper.data('assetIdCurrent', assetId);
     // Unset the element that's selecting the asset.
     selectingAssetElement = null;
@@ -88,6 +88,7 @@ $('#content').on('o-module-image_annotate:reset', '.image-annotate-container', f
     }
 });
 
-// @todo: Handle asset clear
+// @todo: Handle delete attachment?
+// @todo: Handle asset clear?
 
 });
