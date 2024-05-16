@@ -127,6 +127,7 @@ SQL;
         }
 
         $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
+        $view->headLink()->appendStylesheet($view->assetUrl('css/style.css', 'ImageAnnotate'));
         $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
         $view->headScript()->appendFile($view->assetUrl('js/image-annotate.js', 'ImageAnnotate'));
         $view->headScript()->appendFile($view->assetUrl('js/image-annotate/show-annotations.js', 'ImageAnnotate'));
@@ -175,6 +176,7 @@ SQL;
         $annotations = $imageAnnotateMedia ? $imageAnnotateMedia->getAnnotations() : [];
 
         $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
+        $view->headLink()->appendStylesheet($view->assetUrl('css/style.css', 'ImageAnnotate'));
         $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
         $view->headScript()->appendFile($view->assetUrl('js/image-annotate.js', 'ImageAnnotate'));
         $view->headScript()->appendFile($view->assetUrl('js/image-annotate/edit-annotations.js', 'ImageAnnotate'));

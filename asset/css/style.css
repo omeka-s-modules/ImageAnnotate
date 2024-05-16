@@ -1,0 +1,9 @@
+/*
+Remove comment replies from the Annotorious editor. We must use CSS to remove
+replies because the COMMENT widget has no configuration to disable them.
+
+@see https://github.com/annotorious/annotorious/discussions/404
+*/
+div.r6o-widget.comment:nth-of-type(n+2) {
+    display: none;
+}

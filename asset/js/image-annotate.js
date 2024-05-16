@@ -12,7 +12,9 @@ const ImageAnnotate = {
             return Annotorious.init({
                 image: image[0],
                 // Display annotations in read-only mode.
-                readOnly: true
+                readOnly: true,
+                // Remove TAG widget by setting only COMMENT.
+                widgets: ['COMMENT'],
             });
         };
         ImageAnnotate.init(container, annotations, imageSrc, getAnno);
