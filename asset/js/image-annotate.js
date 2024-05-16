@@ -48,17 +48,17 @@ const ImageAnnotate = {
      */
     init: function(container, annotations, imageSrc, getAnno) {
         const image = container.find('.image-annotate-image');
-        // First, remove all onload event handlers to prevent triggering
-        // multiple. Then, on image load, destroy the current annotation
-        // interface, if any, and initialize a new one.
-        image.off('load');
-        image.on('load', function() {
+        // On image load, destroy the current annotation interface, if any, and
+        // initialize a new one. Note the use of one() to ensure the handler is
+        // executed only once.
+        image.one('load', function() {
             let anno = container.data('anno');
             if (anno) anno.destroy();
             anno = getAnno(image);
             anno.setAnnotations(annotations);
             container.data('anno', anno);
         });
+        // Set the image source, which triggers the image load event.
         image.attr('src', imageSrc);
     }
 }

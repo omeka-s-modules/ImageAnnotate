@@ -6,7 +6,7 @@ $canReset = (bool) $annotations;
     data-image-src="<?php echo $this->escapeHtml($imageSrc); ?>"
     data-annotations="<?php echo $this->escapeHtml(json_encode($annotations)); ?>">
     <div class="image-annotate-image-wrapper">
-        <img class="image-annotate-image">
+        <img class="image-annotate-image" src="<?php echo $this->escapeHtml($imageSrc); ?>">
     </div>
     <?php if ($isEdit && $canReset): ?>
     <button type="button" class="image-annotate-reset-button"><?php echo $this->translate('Reset annotations'); ?></button>
