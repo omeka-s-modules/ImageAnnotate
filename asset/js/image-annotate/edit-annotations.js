@@ -13,6 +13,8 @@ $(document).ready(function() {
         $('.image-annotate-container').each(function() {
             const container = $(this);
             const anno = container.data('anno');
+            // No need to package annoations with no Annotorious object.
+            if (!anno) return;
             // getAnnotations() will pick up drawn annotations that have no
             // comment. These annotations have no body in Annotorious' W3C Web
             // Annotation output. In what must be a bug, Annotorious provides no

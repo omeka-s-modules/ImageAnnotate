@@ -1,6 +1,7 @@
 <?php
+// Set an inputName to include markup used for editing annoations.
 $isEdit = isset($inputName);
-$canReset = (bool) $annotations;
+$canReset = $isEdit && $imageSrc && $annotations;
 ?>
 <div class="image-annotate-container"
     data-image-src="<?php echo $this->escapeHtml($imageSrc); ?>"
@@ -8,7 +9,7 @@ $canReset = (bool) $annotations;
     <div class="image-annotate-image-wrapper">
         <img class="image-annotate-image" src="<?php echo $this->escapeHtml($imageSrc); ?>">
     </div>
-    <?php if ($isEdit && $canReset): ?>
+    <?php if ($canReset): ?>
     <button type="button" class="image-annotate-reset-button"><?php echo $this->translate('Reset annotations'); ?></button>
     <?php endif; ?>
     <?php if ($isEdit): ?>
