@@ -41,7 +41,7 @@ class ImageAnnotateMedia implements ResourcePageBlockLayoutInterface
         $view->headScript()->appendFile($view->assetUrl('js/image-annotate.js', 'ImageAnnotate'));
         $view->headScript()->appendFile($view->assetUrl('js/image-annotate/show-annotations.js', 'ImageAnnotate'));
         return $view->partial('common/image-annotate', [
-            'imageSrc' => $resource->thumbnailUrl('large'),
+            'imageSrc' => $resource->thumbnailDisplayUrl('large'),
             'annotations' => $annotations,
         ]);
     }

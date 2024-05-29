@@ -45,7 +45,7 @@ class ImageAnnotatePrimaryMedia implements ResourcePageBlockLayoutInterface
             return '';
         }
         $output .= $view->partial('common/image-annotate', [
-            'imageSrc' => $media->thumbnailUrl('large'),
+            'imageSrc' => $media->thumbnailDisplayUrl('large'),
             'annotations' => $annotations,
         ]);
         return $output;

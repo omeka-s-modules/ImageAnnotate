@@ -41,7 +41,7 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
         if ($attachments && $media = $attachments[0]->media()) {
             $itemId = $attachments[0]->item()->id();
             $mediaId = $media->id();
-            $imageSrc = $media->thumbnailUrl('large');
+            $imageSrc = $media->thumbnailDisplayUrl('large');
         }
 
         return sprintf(
@@ -84,7 +84,7 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
         }
         $imageSrc = null;
         if ($attachments && $media = $attachments[0]->media()) {
-            $imageSrc = $media->thumbnailUrl('large');
+            $imageSrc = $media->thumbnailDisplayUrl('large');
         }
 
         return $view->partial('common/image-annotate', [

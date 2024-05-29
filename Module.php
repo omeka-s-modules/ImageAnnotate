@@ -134,7 +134,7 @@ SQL;
         echo sprintf(
             '<div id="image-annotate-section" class="section">%s</div>',
             $view->partial('common/image-annotate', [
-                'imageSrc' => $media->thumbnailUrl('large'),
+                'imageSrc' => $media->thumbnailDisplayUrl('large'),
                 'annotations' => $annotations,
             ])
         );
@@ -183,7 +183,7 @@ SQL;
         echo sprintf(
             '<div id="image-annotate-section" class="section">%s</div>',
             $view->partial('common/image-annotate', [
-                'imageSrc' => $media->thumbnailUrl('large'),
+                'imageSrc' => $media->thumbnailDisplayUrl('large'),
                 'annotations' => $annotations,
                 'inputName' => sprintf('image_annotate_annotations[%s]', $media->id()),
             ])
