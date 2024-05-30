@@ -88,7 +88,4 @@ $('#content').on('o-module-image_annotate:reset', '.image-annotate-container', f
     }
 });
 
-// @todo: Handle delete attachment?
-// @todo: Handle asset clear?
-
 });
