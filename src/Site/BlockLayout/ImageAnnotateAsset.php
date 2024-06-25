@@ -76,5 +76,31 @@ class ImageAnnotateAsset extends AbstractBlockLayout implements TemplateableBloc
 
     public function render(PhpRenderer $view, SitePageBlockRepresentation $block, $templateViewScript = 'common/block-layout/image-annotate-asset')
     {
+        $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
+        $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
+        $view->headScript()->appendFile($view->assetUrl('js/image-annotate.js', 'ImageAnnotate'));
+        $view->headScript()->appendFile($view->assetUrl('js/image-annotate/show-annotations.js', 'ImageAnnotate'));
+
+        $data = $block ? $block->data() : [];
+
+        $assetId = null;
+        if (isset($data['asset_id']) && is_numeric($data['asset_id'])) {
+            $assetId = $data['asset_id'];
+        }
+
+        $imageSrc = null;
+        if ($assetId && $asset = $view->api()->searchOne('assets', ['id' => $assetId])->getContent()) {
+            $imageSrc = $asset->assetUrl();
+        }
+
+        $annotations = [];
+        if (isset($data['annotations']) && is_string($data['annotations'])) {
+            $annotations = json_decode($data['annotations'], true);
+        }
+
+        return $view->partial('common/image-annotate', [
+            'imageSrc' => $imageSrc,
+            'annotations' => $annotations,
+        ]);
     }
 }
