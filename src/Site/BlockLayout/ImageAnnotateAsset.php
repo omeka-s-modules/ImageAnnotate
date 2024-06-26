@@ -1,6 +1,7 @@
 <?php
 namespace ImageAnnotate\Site\BlockLayout;
 
+use Laminas\Form\Element;
 use Laminas\View\Renderer\PhpRenderer;
 use Omeka\Api\Representation\SiteRepresentation;
 use Omeka\Api\Representation\SitePageRepresentation;
@@ -48,8 +49,20 @@ class ImageAnnotateAsset extends AbstractBlockLayout implements TemplateableBloc
         $assetElement = new Asset('o:block[__blockIndex__][o:data][asset_id]');
         $assetElement->setValue($assetId);
 
+        $captionTextarea = (new Element\Textarea('o:block[__blockIndex__][o:data][caption]'))
+            ->setLabel('Caption') // @translate
+            ->setValue($data['caption'] ?? '');
+
         return sprintf('
-            <a href="#" class="collapse" aria-label="expand"><h4>%s</h4></a>
+            <a href="#" class="collapse" aria-label="expand">
+                <h4>%s</h4>
+            </a>
+            <div class="collapsible">
+                %s
+            </div>
+            <a href="#" class="expand" aria-label="expand">
+                <h4>%s</h4>
+            </a>
             <div class="collapsible">
                 %s
             </div>
@@ -62,6 +75,8 @@ class ImageAnnotateAsset extends AbstractBlockLayout implements TemplateableBloc
             </div>',
             $view->translate('Asset'),
             $view->formElement($assetElement),
+            $view->translate('Options'),
+            $view->formRow($captionTextarea),
             $view->translate('Annotate image'),
             $view->escapeHtml($assetId),
             $view->escapeHtml($assetId),
@@ -88,6 +103,11 @@ class ImageAnnotateAsset extends AbstractBlockLayout implements TemplateableBloc
             $assetId = $data['asset_id'];
         }
 
+        $caption = null;
+        if (isset($data['caption']) && is_string($data['caption'])) {
+            $caption = $data['caption'];
+        }
+
         $imageSrc = null;
         if ($assetId && $asset = $view->api()->searchOne('assets', ['id' => $assetId])->getContent()) {
             $imageSrc = $asset->assetUrl();
@@ -101,6 +121,7 @@ class ImageAnnotateAsset extends AbstractBlockLayout implements TemplateableBloc
         return $view->partial($templateViewScript, [
             'imageSrc' => $imageSrc,
             'annotations' => $annotations,
+            'caption' => $caption,
         ]);
     }
 }

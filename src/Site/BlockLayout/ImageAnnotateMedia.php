@@ -1,6 +1,7 @@
 <?php
 namespace ImageAnnotate\Site\BlockLayout;
 
+use Laminas\Form\Element;
 use Laminas\View\Renderer\PhpRenderer;
 use Omeka\Api\Representation\SiteRepresentation;
 use Omeka\Api\Representation\SitePageRepresentation;
@@ -44,7 +45,7 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
             $imageSrc = $media->thumbnailDisplayUrl('large');
         }
 
-        $displayTitleSelect = (new \Laminas\Form\Element\Select('o:block[__blockIndex__][o:data][display_title]'))
+        $displayTitleSelect = (new Element\Select('o:block[__blockIndex__][o:data][display_title]'))
             ->setLabel('Display title') // @translate
             ->setEmptyOption('No title') // @translate
             ->setValueOptions([

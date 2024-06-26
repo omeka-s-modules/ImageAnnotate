@@ -4,3 +4,7 @@ echo $this->partial('common/image-annotate', [
     'annotations' => $annotations,
 ]);
 ?>
+
+<?php if ($caption): ?>
+<div class="caption"><?php echo $caption; ?></div>
+<?php endif; ?>
