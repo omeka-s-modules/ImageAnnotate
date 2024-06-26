@@ -1,4 +1,11 @@
 /*
+Make images fit without overflow.
+*/
+.image-annotate-image {
+    width: 100%;
+}
+
+/*
 Remove comment replies from the Annotorious editor. We must use CSS to remove
 replies because the COMMENT widget has no configuration to disable them.
 
