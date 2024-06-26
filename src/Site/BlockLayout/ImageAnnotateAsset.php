@@ -98,7 +98,7 @@ class ImageAnnotateAsset extends AbstractBlockLayout implements TemplateableBloc
             $annotations = json_decode($data['annotations'], true);
         }
 
-        return $view->partial('common/image-annotate', [
+        return $view->partial($templateViewScript, [
             'imageSrc' => $imageSrc,
             'annotations' => $annotations,
         ]);

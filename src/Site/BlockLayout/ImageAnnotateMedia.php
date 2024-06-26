@@ -87,7 +87,7 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
             $imageSrc = $media->thumbnailDisplayUrl('large');
         }
 
-        return $view->partial('common/image-annotate', [
+        return $view->partial($templateViewScript, [
             'imageSrc' => $imageSrc,
             'annotations' => $annotations,
         ]);
