@@ -44,9 +44,26 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
             $imageSrc = $media->thumbnailDisplayUrl('large');
         }
 
+        $displayTitleSelect = (new \Laminas\Form\Element\Select('o:block[__blockIndex__][o:data][display_title]'))
+            ->setLabel('Display title') // @translate
+            ->setEmptyOption('No title') // @translate
+            ->setValueOptions([
+                'item' => 'Item title', // @translate
+                'media' => 'Media title', // @translate
+            ])
+            ->setValue($data['display_title'] ?? '');
+
         return sprintf(
             '%s
-            <a href="#" class="expand" aria-label="expand"><h4>%s</h4></a>
+            <a href="#" class="expand" aria-label="expand">
+                <h4>%s</h4>
+            </a>
+            <div class="collapsible">
+                %s
+            </div>
+            <a href="#" class="expand" aria-label="expand">
+                <h4>%s</h4>
+            </a>
             <div class="image-annotate-container-wrapper collapsible"
                 data-item-id-original="%s"
                 data-media-id-original="%s"
@@ -55,6 +72,8 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
                 %s
             </div>',
             $view->blockAttachmentsForm($block, false, [], 1),
+            $view->translate('Options'),
+            $view->formRow($displayTitleSelect),
             $view->translate('Annotate image'),
             $view->escapeHtml($itemId),
             $view->escapeHtml($mediaId),
@@ -82,14 +101,29 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
         if (isset($data['annotations']) && is_string($data['annotations'])) {
             $annotations = json_decode($data['annotations'], true);
         }
+
+        $displayTitle = null;
+        if (isset($data['display_title']) && in_array($data['display_title'], ['item', 'media'])) {
+            $displayTitle = $data['display_title'];
+        }
+
+        $item = null;
+        $media = null;
         $imageSrc = null;
+        $caption = null;
         if ($attachments && $media = $attachments[0]->media()) {
+            $item = $media->item();
             $imageSrc = $media->thumbnailDisplayUrl('large');
+            $caption = $attachments[0]->caption();
         }
 
         return $view->partial($templateViewScript, [
             'imageSrc' => $imageSrc,
             'annotations' => $annotations,
+            'item' => $item,
+            'media' => $media,
+            'displayTitle' => $displayTitle,
+            'caption' => $caption,
         ]);
     }
 }
