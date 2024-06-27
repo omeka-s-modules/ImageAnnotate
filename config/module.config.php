@@ -38,7 +38,6 @@ return [
         'factories' => [
             'imageAnnotateMedia' => Service\Site\ResourcePageBlockLayout\ImageAnnotateMediaFactory::class,
             'imageAnnotateItem' => Service\Site\ResourcePageBlockLayout\ImageAnnotateItemFactory::class,
-            'imageAnnotatePrimaryMedia' => Service\Site\ResourcePageBlockLayout\ImageAnnotatePrimaryMediaFactory::class,
         ],
     ],
 ];

@@ -16,7 +16,7 @@ class ImageAnnotateItem implements ResourcePageBlockLayoutInterface
 
     public function getLabel() : string
     {
-        return 'Image annotations (all media)'; // @translate
+        return 'Media embeds (with image annotations)'; // @translate
     }
 
     public function getCompatibleResourceNames() : array
@@ -27,24 +27,20 @@ class ImageAnnotateItem implements ResourcePageBlockLayoutInterface
     public function render(PhpRenderer $view, AbstractResourceEntityRepresentation $resource) : string
     {
         $output = '';
-        $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
-        $view->headLink()->appendStylesheet($view->assetUrl('css/style.css', 'ImageAnnotate'));
-        $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
-        $view->headScript()->appendFile($view->assetUrl('js/image-annotate.js', 'ImageAnnotate'));
-        $view->headScript()->appendFile($view->assetUrl('js/image-annotate/show-annotations.js', 'ImageAnnotate'));
-        foreach ($resource->media() as $media) {
+        foreach ($resource->media() as $resource) {
             // Get annotations, if any.
             $imageAnnotateMedia = $this->entityManager
                 ->getRepository('ImageAnnotate\Entity\ImageAnnotateMedia')
-                ->findOneBy(['media' => $media->id()]);
+                ->findOneBy(['media' => $resource->id()]);
             $annotations = $imageAnnotateMedia ? $imageAnnotateMedia->getAnnotations() : [];
-            if (!$annotations) {
-                continue;
+            if ($annotations) {
+                $output .= $view->partial('common/resource-page-block-layout/image-annotate-media', [
+                    'resource' => $resource,
+                    'annotations' => $annotations,
+                ]);
+            } else {
+                $output .= $resource->render();
             }
-            $output .= $view->partial('common/image-annotate', [
-                'imageSrc' => $media->thumbnailDisplayUrl('large'),
-                'annotations' => $annotations,
-            ]);
         }
         return $output;
     }

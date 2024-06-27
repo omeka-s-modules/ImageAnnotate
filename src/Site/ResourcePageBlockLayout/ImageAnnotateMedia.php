@@ -16,7 +16,7 @@ class ImageAnnotateMedia implements ResourcePageBlockLayoutInterface
 
     public function getLabel() : string
     {
-        return 'Image annotations'; // @translate
+        return 'Media render (with image annotations)'; // @translate
     }
 
     public function getCompatibleResourceNames() : array
@@ -31,18 +31,13 @@ class ImageAnnotateMedia implements ResourcePageBlockLayoutInterface
             ->getRepository('ImageAnnotate\Entity\ImageAnnotateMedia')
             ->findOneBy(['media' => $resource->id()]);
         $annotations = $imageAnnotateMedia ? $imageAnnotateMedia->getAnnotations() : [];
-        if (!$annotations) {
-            return '';
+        if ($annotations) {
+            return $view->partial('common/resource-page-block-layout/image-annotate-media', [
+                'resource' => $resource,
+                'annotations' => $annotations,
+            ]);
+        } else {
+            return $resource->render();
         }
-
-        $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
-        $view->headLink()->appendStylesheet($view->assetUrl('css/style.css', 'ImageAnnotate'));
-        $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
-        $view->headScript()->appendFile($view->assetUrl('js/image-annotate.js', 'ImageAnnotate'));
-        $view->headScript()->appendFile($view->assetUrl('js/image-annotate/show-annotations.js', 'ImageAnnotate'));
-        return $view->partial('common/image-annotate', [
-            'imageSrc' => $resource->thumbnailDisplayUrl('large'),
-            'annotations' => $annotations,
-        ]);
     }
 }

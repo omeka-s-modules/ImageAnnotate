@@ -1,0 +1,22 @@
+<?php
+$this->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
+$this->headLink()->appendStylesheet($this->assetUrl('css/style.css', 'ImageAnnotate'));
+$this->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
+$this->headScript()->appendFile($this->assetUrl('js/image-annotate.js', 'ImageAnnotate'));
+$this->headScript()->appendFile($this->assetUrl('js/image-annotate/show-annotations.js', 'ImageAnnotate'));
+?>
+<div class="image-annotate-media-wrapper">
+    <div class="image-annotate-media-render">
+        <?php echo $resource->render(); ?>
+    </div>
+    <div class="image-annotate-media-annotations" style="display: none;">
+        <?php
+        echo $this->partial('common/image-annotate', [
+            'imageSrc' => $resource->thumbnailDisplayUrl('large'),
+            'annotations' => $annotations,
+        ]);
+        ?>
+    </div>
+    <button type="button" class="image-annotate-view-media" style="display: none;"><?php echo $this->translate('View media'); ?></button>
+    <button type="button" class="image-annotate-view-annotations"><?php echo $this->translate('View annotations'); ?></button>
+</div>
