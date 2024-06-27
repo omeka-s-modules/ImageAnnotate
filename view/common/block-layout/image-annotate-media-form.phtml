@@ -1,0 +1,24 @@
+<?php echo $this->blockAttachmentsForm($block, false, [], 1); ?>
+<a href="#" class="expand" aria-label="expand">
+    <h4><?php echo $this->translate('Options'); ?></h4>
+</a>
+<div class="collapsible">
+    <?php echo $this->formRow($form->get('o:block[__blockIndex__][o:data][media_annotations]')); ?>
+    <?php echo $this->formRow($form->get('o:block[__blockIndex__][o:data][title]')); ?>
+</div>
+<a href="#" class="expand" aria-label="expand">
+    <h4><?php echo $this->translate('Annotate image') ?></h4>
+</a>
+<div class="image-annotate-container-wrapper collapsible"
+    data-item-id-original="<?php echo $this->escapeHtml($itemId); ?>"
+    data-media-id-original="<?php echo $this->escapeHtml($mediaId); ?>"
+    data-media-id-current="<?php echo $this->escapeHtml($mediaId); ?>"
+    data-api-endpoint-url="<?php echo $this->escapeHtml($this->url('api-local')); ?>">
+    <?php
+    echo $this->partial('common/image-annotate', [
+        'imageSrc' => $imageSrc,
+        'annotations' => $annotations,
+        'inputName' => 'o:block[__blockIndex__][o:data][annotations]',
+    ]);
+    ?>
+</div>

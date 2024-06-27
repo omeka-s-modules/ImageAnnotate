@@ -1,6 +1,8 @@
 <?php
 namespace ImageAnnotate\Site\BlockLayout;
 
+use Doctrine\ORM\EntityManager;
+use Laminas\Form\Form;
 use Laminas\Form\Element;
 use Laminas\View\Renderer\PhpRenderer;
 use Omeka\Api\Representation\SiteRepresentation;
@@ -11,6 +13,19 @@ use Omeka\Site\BlockLayout\TemplateableBlockLayoutInterface;
 
 class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBlockLayoutInterface
 {
+    protected $defaultData = [
+        'annotations' => '[]',
+        'media_annotations' => null,
+        'title' => null,
+    ];
+
+    protected $entityManager;
+
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
     public function getLabel()
     {
         return 'Image annotate media'; // @translate
@@ -28,14 +43,10 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
 
     public function form(PhpRenderer $view, SiteRepresentation $site, SitePageRepresentation $page = null, SitePageBlockRepresentation $block = null)
     {
-        $data = $block ? $block->data() : [];
+        $data = $this->getBlockData($block);
         $attachments = $block ? $block->attachments() : [];
 
-        $annotations = [];
-        if (isset($data['annotations']) && is_string($data['annotations'])) {
-            $annotations = json_decode($data['annotations'], true);
-        }
-
+        // Get resource data.
         $itemId = null;
         $mediaId = null;
         $imageSrc = null;
@@ -45,47 +56,35 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
             $imageSrc = $media->thumbnailDisplayUrl('large');
         }
 
-        $displayTitleSelect = (new Element\Select('o:block[__blockIndex__][o:data][display_title]'))
-            ->setLabel('Display title') // @translate
-            ->setEmptyOption('No title') // @translate
-            ->setValueOptions([
-                'item' => 'Item title', // @translate
-                'media' => 'Media title', // @translate
-            ])
-            ->setValue($data['display_title'] ?? '');
+        // Get the annotations.
+        $annotations =  json_decode($data['annotations'], true);
 
-        return sprintf(
-            '%s
-            <a href="#" class="expand" aria-label="expand">
-                <h4>%s</h4>
-            </a>
-            <div class="collapsible">
-                %s
-            </div>
-            <a href="#" class="expand" aria-label="expand">
-                <h4>%s</h4>
-            </a>
-            <div class="image-annotate-container-wrapper collapsible"
-                data-item-id-original="%s"
-                data-media-id-original="%s"
-                data-media-id-current="%s"
-                data-api-endpoint-url="%s">
-                %s
-            </div>',
-            $view->blockAttachmentsForm($block, false, [], 1),
-            $view->translate('Options'),
-            $view->formRow($displayTitleSelect),
-            $view->translate('Annotate image'),
-            $view->escapeHtml($itemId),
-            $view->escapeHtml($mediaId),
-            $view->escapeHtml($mediaId),
-            $view->escapeHtml($view->url('api-local')),
-            $view->partial('common/image-annotate', [
-                'imageSrc' => $imageSrc,
-                'annotations' => $annotations,
-                'inputName' => 'o:block[__blockIndex__][o:data][annotations]',
-            ])
-        );
+        // Build the options form.
+        $form = new Form('image_annotate_media_form');
+
+        $checkbox = new Element\Checkbox('o:block[__blockIndex__][o:data][media_annotations]');
+        $checkbox->setLabel('Include media annotations?');
+        $checkbox->setValue($data['media_annotations']);
+        $form->add($checkbox);
+
+        $select = new Element\Select('o:block[__blockIndex__][o:data][title]');
+        $select->setLabel('Display title'); // @translate
+        $select->setEmptyOption('No title'); // @translate
+        $select->setValueOptions([
+            'item' => 'Item title', // @translate
+            'media' => 'Media title', // @translate
+        ]);
+        $select->setValue($data['title']);
+        $form->add($select);
+
+        return $view->partial('common/block-layout/image-annotate-media-form', [
+            'itemId' => $itemId,
+            'mediaId' => $mediaId,
+            'imageSrc' => $imageSrc,
+            'block' => $block,
+            'form' => $form,
+            'annotations' => $annotations,
+        ]);
     }
 
     public function render(PhpRenderer $view, SitePageBlockRepresentation $block, $templateViewScript = 'common/block-layout/image-annotate-media')
@@ -95,19 +94,10 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
         $view->headScript()->appendFile($view->assetUrl('js/image-annotate.js', 'ImageAnnotate'));
         $view->headScript()->appendFile($view->assetUrl('js/image-annotate/show-annotations.js', 'ImageAnnotate'));
 
-        $data = $block ? $block->data() : [];
+        $data = $this->getBlockData($block);
         $attachments = $block ? $block->attachments() : [];
 
-        $annotations = [];
-        if (isset($data['annotations']) && is_string($data['annotations'])) {
-            $annotations = json_decode($data['annotations'], true);
-        }
-
-        $displayTitle = null;
-        if (isset($data['display_title']) && in_array($data['display_title'], ['item', 'media'])) {
-            $displayTitle = $data['display_title'];
-        }
-
+        // Get resource data.
         $item = null;
         $media = null;
         $imageSrc = null;
@@ -118,13 +108,31 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
             $caption = $attachments[0]->caption();
         }
 
+        // Get the annotations.
+        $annotations = json_decode($data['annotations'], true);
+        if ($media && $data['media_annotations']) {
+            // Append media-context annotations to page-context annotations.
+            $mediaAnnotationsEntity = $this->entityManager
+                ->getRepository('ImageAnnotate\Entity\ImageAnnotateMedia')
+                ->findOneBy(['media' => $media->id()]);
+            if ($mediaAnnotationsEntity) {
+                $annotations = array_merge($annotations, $mediaAnnotationsEntity->getAnnotations());
+            }
+        }
+
         return $view->partial($templateViewScript, [
-            'imageSrc' => $imageSrc,
-            'annotations' => $annotations,
             'item' => $item,
             'media' => $media,
-            'displayTitle' => $displayTitle,
+            'imageSrc' => $imageSrc,
             'caption' => $caption,
+            'data' => $data,
+            'annotations' => $annotations,
         ]);
+    }
+
+    public function getBlockData(?SitePageBlockRepresentation $block)
+    {
+        $data = $block ? $block->data() : [];
+        return array_merge($this->defaultData, $data);
     }
 }

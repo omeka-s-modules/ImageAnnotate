@@ -5,9 +5,9 @@ echo $this->partial('common/image-annotate', [
 ]);
 ?>
 
-<?php if ($item && 'item' === $displayTitle): ?>
+<?php if ($item && 'item' === $data['title']): ?>
 <h3><?php echo $item->link($item->displayTitle()); ?></h3>
-<?php elseif ($media && 'media' === $displayTitle): ?>
+<?php elseif ($media && 'media' === $data['title']): ?>
 <h3><?php echo $media->link($media->displayTitle()); ?></h3>
 <?php endif; ?>
 
