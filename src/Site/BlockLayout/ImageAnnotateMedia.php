@@ -59,23 +59,23 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
         // Get the annotations.
         $annotations =  json_decode($data['annotations'], true);
 
-        // Build the options form.
+        // Build the form.
         $form = new Form('image_annotate_media_form');
 
-        $checkbox = new Element\Checkbox('o:block[__blockIndex__][o:data][media_annotations]');
-        $checkbox->setLabel('Include media annotations?');
-        $checkbox->setValue($data['media_annotations']);
-        $form->add($checkbox);
+        $element = new Element\Checkbox('o:block[__blockIndex__][o:data][media_annotations]');
+        $element->setLabel('Include media annotations?');
+        $element->setValue($data['media_annotations']);
+        $form->add($element);
 
-        $select = new Element\Select('o:block[__blockIndex__][o:data][title]');
-        $select->setLabel('Display title'); // @translate
-        $select->setEmptyOption('No title'); // @translate
-        $select->setValueOptions([
+        $element = new Element\Select('o:block[__blockIndex__][o:data][title]');
+        $element->setLabel('Display title'); // @translate
+        $element->setEmptyOption('No title'); // @translate
+        $element->setValueOptions([
             'item' => 'Item title', // @translate
             'media' => 'Media title', // @translate
         ]);
-        $select->setValue($data['title']);
-        $form->add($select);
+        $element->setValue($data['title']);
+        $form->add($element);
 
         return $view->partial('common/block-layout/image-annotate-media-form', [
             'itemId' => $itemId,
@@ -89,11 +89,6 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
 
     public function render(PhpRenderer $view, SitePageBlockRepresentation $block, $templateViewScript = 'common/block-layout/image-annotate-media')
     {
-        $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
-        $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
-        $view->headScript()->appendFile($view->assetUrl('js/image-annotate.js', 'ImageAnnotate'));
-        $view->headScript()->appendFile($view->assetUrl('js/image-annotate/show-annotations.js', 'ImageAnnotate'));
-
         $data = $this->getBlockData($block);
         $attachments = $block ? $block->attachments() : [];
 

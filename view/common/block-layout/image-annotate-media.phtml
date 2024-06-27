@@ -1,4 +1,9 @@
 <?php
+$this->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
+$this->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
+$this->headScript()->appendFile($this->assetUrl('js/image-annotate.js', 'ImageAnnotate'));
+$this->headScript()->appendFile($this->assetUrl('js/image-annotate/show-annotations.js', 'ImageAnnotate'));
+
 echo $this->partial('common/image-annotate', [
     'imageSrc' => $imageSrc,
     'annotations' => $annotations,

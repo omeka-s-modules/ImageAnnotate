@@ -1,0 +1,27 @@
+<a href="#" class="collapse" aria-label="expand">
+    <h4><?php echo $this->translate('Asset'); ?></h4>
+</a>
+<div class="collapsible">
+    <?php echo $this->formElement($form->get('o:block[__blockIndex__][o:data][asset_id]')); ?>
+</div>
+<a href="#" class="expand" aria-label="expand">
+    <h4><?php echo $this->translate('Options'); ?></h4>
+</a>
+<div class="collapsible">
+    <?php echo $this->formRow($form->get('o:block[__blockIndex__][o:data][caption]')); ?>
+</div>
+<a href="#" class="expand" aria-label="expand">
+    <h4><?php echo $this->translate('Annotate image'); ?></h4>
+</a>
+<div class="image-annotate-container-wrapper collapsible"
+    data-asset-id-original="<?php echo $this->escapeHtml($assetId); ?>"
+    data-asset-id-current="<?php echo $this->escapeHtml($assetId); ?>"
+    data-api-endpoint-url="<?php echo $this->escapeHtml($this->url('api-local')); ?>">
+    <?php
+    echo $this->partial('common/image-annotate', [
+        'imageSrc' => $imageSrc,
+        'annotations' => $annotations,
+        'inputName' => 'o:block[__blockIndex__][o:data][annotations]',
+    ]);
+    ?>
+</div>

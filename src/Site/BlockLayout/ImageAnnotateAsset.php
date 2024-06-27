@@ -1,6 +1,7 @@
 <?php
 namespace ImageAnnotate\Site\BlockLayout;
 
+use Laminas\Form\Form;
 use Laminas\Form\Element;
 use Laminas\View\Renderer\PhpRenderer;
 use Omeka\Api\Representation\SiteRepresentation;
@@ -12,6 +13,12 @@ use Omeka\Site\BlockLayout\TemplateableBlockLayoutInterface;
 
 class ImageAnnotateAsset extends AbstractBlockLayout implements TemplateableBlockLayoutInterface
 {
+    protected $defaultData = [
+        'annotations' => '[]',
+        'asset_id' => null,
+        'caption' => null,
+    ];
+
     public function getLabel()
     {
         return 'Image annotate asset'; // @translate
@@ -29,99 +36,61 @@ class ImageAnnotateAsset extends AbstractBlockLayout implements TemplateableBloc
 
     public function form(PhpRenderer $view, SiteRepresentation $site, SitePageRepresentation $page = null, SitePageBlockRepresentation $block = null)
     {
-        $data = $block ? $block->data() : [];
+        $data = $this->getBlockData($block);
 
-        $assetId = null;
-        if (isset($data['asset_id']) && is_numeric($data['asset_id'])) {
-            $assetId = $data['asset_id'];
-        }
-
+        // Get resource data.
+        $assetId = $data['asset_id'];
         $imageSrc = null;
         if ($assetId && $asset = $view->api()->searchOne('assets', ['id' => $assetId])->getContent()) {
             $imageSrc = $asset->assetUrl();
         }
 
-        $annotations = [];
-        if (isset($data['annotations']) && is_string($data['annotations'])) {
-            $annotations = json_decode($data['annotations'], true);
-        }
+        // Get the annotations.
+        $annotations = json_decode($data['annotations'], true);
 
-        $assetElement = new Asset('o:block[__blockIndex__][o:data][asset_id]');
-        $assetElement->setValue($assetId);
+        // Build the form
+        $form = new Form('image_annotate_media_form');
 
-        $captionTextarea = (new Element\Textarea('o:block[__blockIndex__][o:data][caption]'))
-            ->setLabel('Caption') // @translate
-            ->setValue($data['caption'] ?? '');
+        $element = new Asset('o:block[__blockIndex__][o:data][asset_id]');
+        $element->setValue($assetId);
+        $form->add($element);
 
-        return sprintf('
-            <a href="#" class="collapse" aria-label="expand">
-                <h4>%s</h4>
-            </a>
-            <div class="collapsible">
-                %s
-            </div>
-            <a href="#" class="expand" aria-label="expand">
-                <h4>%s</h4>
-            </a>
-            <div class="collapsible">
-                %s
-            </div>
-            <a href="#" class="expand" aria-label="expand"><h4>%s</h4></a>
-            <div class="image-annotate-container-wrapper collapsible"
-                data-asset-id-original="%s"
-                data-asset-id-current="%s"
-                data-api-endpoint-url="%s">
-                %s
-            </div>',
-            $view->translate('Asset'),
-            $view->formElement($assetElement),
-            $view->translate('Options'),
-            $view->formRow($captionTextarea),
-            $view->translate('Annotate image'),
-            $view->escapeHtml($assetId),
-            $view->escapeHtml($assetId),
-            $view->escapeHtml($view->url('api-local')),
-            $view->partial('common/image-annotate', [
-                'imageSrc' => $imageSrc,
-                'annotations' => $annotations,
-                'inputName' => 'o:block[__blockIndex__][o:data][annotations]',
-            ])
-        );
+        $element = new Element\Textarea('o:block[__blockIndex__][o:data][caption]');
+        $element->setLabel('Caption'); // @translate
+        $element->setValue($data['caption']);
+        $form->add($element);
+
+        return $view->partial('common/block-layout/image-annotate-asset-form', [
+            'assetId' => $assetId,
+            'form' => $form,
+            'imageSrc' => $imageSrc,
+            'annotations' => $annotations,
+        ]);
     }
 
     public function render(PhpRenderer $view, SitePageBlockRepresentation $block, $templateViewScript = 'common/block-layout/image-annotate-asset')
     {
-        $view->headLink()->appendStylesheet('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.css');
-        $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/@recogito/annotorious@2.7.13/dist/annotorious.min.js');
-        $view->headScript()->appendFile($view->assetUrl('js/image-annotate.js', 'ImageAnnotate'));
-        $view->headScript()->appendFile($view->assetUrl('js/image-annotate/show-annotations.js', 'ImageAnnotate'));
+        $data = $this->getBlockData($block);
 
-        $data = $block ? $block->data() : [];
-
-        $assetId = null;
-        if (isset($data['asset_id']) && is_numeric($data['asset_id'])) {
-            $assetId = $data['asset_id'];
-        }
-
-        $caption = null;
-        if (isset($data['caption']) && is_string($data['caption'])) {
-            $caption = $data['caption'];
-        }
+        $assetId = $data['asset_id'];
+        $caption = $data['caption'];
+        $annotations = json_decode($data['annotations'], true);
 
         $imageSrc = null;
         if ($assetId && $asset = $view->api()->searchOne('assets', ['id' => $assetId])->getContent()) {
             $imageSrc = $asset->assetUrl();
         }
 
-        $annotations = [];
-        if (isset($data['annotations']) && is_string($data['annotations'])) {
-            $annotations = json_decode($data['annotations'], true);
-        }
-
         return $view->partial($templateViewScript, [
             'imageSrc' => $imageSrc,
-            'annotations' => $annotations,
             'caption' => $caption,
+            'annotations' => $annotations,
         ]);
+    }
+
+    public function getBlockData(?SitePageBlockRepresentation $block)
+    {
+        $data = $block ? $block->data() : [];
+        return array_merge($this->defaultData, $data);
     }
 }
