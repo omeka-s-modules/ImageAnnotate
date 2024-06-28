@@ -79,6 +79,37 @@ SQL;
             'rep.resource.json',
             [$this, 'repResourceJson']
         );
+        $sharedEventManager->attach(
+            '*',
+            'iiif_presentation.3.media.canvas',
+            function (Event $event) {
+                $canvas = $event->getParam('canvas');
+                $media = $event->getParam('media');
+
+                $imageAnnotateMedia = $this->getImageAnnotateMedia($media->id());
+                $annotations = $imageAnnotateMedia ? $imageAnnotateMedia->getAnnotations() : [];
+                if (!$annotations) {
+                    return;
+                }
+
+                // echo '<pre>';print_r($canvas);exit;
+                // echo '<pre>';print_r($annotations);exit;
+
+                foreach ($annotations as &$annotation) {
+                    $annotation['motivation'] = 'commenting';
+                    // http://localhost/omeka-s/iiif-presentation/3/item/23269/canvas/23270
+                    // http://localhost/omeka-s/iiif-presentation/3/item/23269/annotation-page/23270
+                    // http://localhost/omeka-s/iiif-presentation/3/item/23269/annotation/23270
+                    // http://localhost/omeka-s/files/original/22357fb004596cd63e90dd614501a49f15c7e4c0.jpg
+                    $annotation['target'] = 'http://localhost/omeka-s/files/original/22357fb004596cd63e90dd614501a49f15c7e4c0.jpg' . '#' . $annotation['target']['selector']['value'];
+                }
+                $canvas['annotations'] = [
+                    "type" => "AnnotationPage",
+                    'items' => $annotations,
+                ];
+                $event->setParam('canvas', $canvas);
+            }
+        );
     }
 
     /**
