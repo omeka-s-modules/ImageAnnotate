@@ -9,7 +9,7 @@ $this->headScript()->appendFile($this->assetUrl('js/image-annotate/show-annotati
     <div class="image-annotate-media-render">
         <?php echo $resource->render(); ?>
     </div>
-    <div class="image-annotate-media-annotations" style="display: none;">
+    <div class="image-annotate-media-annotations">
         <?php
         echo $this->partial('common/image-annotate', [
             'imageSrc' => $resource->thumbnailDisplayUrl('large'),
@@ -17,6 +17,6 @@ $this->headScript()->appendFile($this->assetUrl('js/image-annotate/show-annotati
         ]);
         ?>
     </div>
-    <button type="button" class="image-annotate-view-media" style="display: none;"><?php echo $this->translate('View media'); ?></button>
+    <button type="button" class="image-annotate-view-media"><?php echo $this->translate('View without annotations'); ?></button>
     <button type="button" class="image-annotate-view-annotations"><?php echo $this->translate('View annotations'); ?></button>
 </div>

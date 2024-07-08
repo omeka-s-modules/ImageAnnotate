@@ -1,3 +1,16 @@
+.image-annotate-media-annotations {
+    display: none;
+}
+
+.image-annotate-view-media {
+    display: none;
+    margin-bottom: 10px;
+}
+
+.image-annotate-view-annotations {
+    margin-bottom: 10px;
+}
+
 /*
 Make images fit without overflow.
 */
