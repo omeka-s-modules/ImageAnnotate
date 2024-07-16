@@ -272,7 +272,8 @@ SQL;
      *
      * @param Event $event
      */
-    public function iiifPresentationMediaCanvas(Event $event) {
+    public function iiifPresentationMediaCanvas(Event $event)
+    {
         $canvas = $event->getParam('canvas');
         $media = $event->getParam('media');
 

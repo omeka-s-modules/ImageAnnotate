@@ -57,7 +57,7 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
         }
 
         // Get the annotations.
-        $annotations =  json_decode($data['annotations'], true);
+        $annotations = json_decode($data['annotations'], true);
 
         // Build the form.
         $form = new Form('image_annotate_media_form');

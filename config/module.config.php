@@ -1,8 +1,6 @@
 <?php
 namespace ImageAnnotate;
 
-use Laminas\Router\Http;
-
 return [
     'translator' => [
         'translation_file_patterns' => [
