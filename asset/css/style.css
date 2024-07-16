@@ -1,14 +1,6 @@
-.image-annotate-media-annotations {
+.image-annotate-media-annotations,
+button.image-annotate-view-media {
     display: none;
-}
-
-.image-annotate-view-media {
-    display: none;
-    margin-bottom: 10px;
-}
-
-.image-annotate-view-annotations {
-    margin-bottom: 10px;
 }
 
 /*
@@ -16,6 +8,19 @@ Make images fit without overflow.
 */
 .image-annotate-image {
     width: 100%;
+}
+
+/* 
+Make 'view annotations' button margins consistent.
+*/
+
+.image-annotate-image-wrapper > div,
+.image-annotate-media-render img {
+    vertical-align: bottom;
+}
+
+.image-annotate-media-wrapper button {
+    margin: .5rem 0;
 }
 
 /*
