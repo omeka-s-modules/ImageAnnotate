@@ -3,6 +3,7 @@
 $isEdit = isset($inputName);
 $canReset = $isEdit && $imageSrc && $annotations;
 ?>
+<?php if ($imageSrc): ?>
 <div class="image-annotate-container"
     data-image-src="<?php echo $this->escapeHtml($imageSrc); ?>"
     data-annotations="<?php echo $this->escapeHtml(json_encode($annotations)); ?>">
@@ -16,3 +17,4 @@ $canReset = $isEdit && $imageSrc && $annotations;
     <input type="hidden" class="image-annotate-annotations" name="<?php echo $this->escapeHtml($inputName); ?>">
     <?php endif; ?>
 </div>
+<?php endif; ?>
