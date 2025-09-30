@@ -6,6 +6,7 @@ $this->headScript()->appendFile($this->assetUrl('js/image-annotate/show-annotati
 
 echo $this->partial('common/image-annotate', [
     'imageSrc' => $imageSrc,
+    'imageAlt' => $imageAlt,
     'annotations' => $annotations,
 ]);
 ?>

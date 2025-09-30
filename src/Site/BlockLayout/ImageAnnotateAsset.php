@@ -79,10 +79,12 @@ class ImageAnnotateAsset extends AbstractBlockLayout implements TemplateableBloc
         $imageSrc = null;
         if ($assetId && $asset = $view->api()->searchOne('assets', ['id' => $assetId])->getContent()) {
             $imageSrc = $asset->assetUrl();
+            $imageAlt = $asset->altText();
         }
 
         return $view->partial($templateViewScript, [
             'imageSrc' => $imageSrc,
+            'imageAlt' => $imageAlt,
             'caption' => $caption,
             'annotations' => $annotations,
         ]);
