@@ -96,6 +96,7 @@ class ImageAnnotateMedia extends AbstractBlockLayout implements TemplateableBloc
         $item = null;
         $media = null;
         $imageSrc = null;
+        $imageAlt = null;
         $caption = null;
         if ($attachments && $media = $attachments[0]->media()) {
             $item = $media->item();
