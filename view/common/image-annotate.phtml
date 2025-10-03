@@ -3,7 +3,7 @@
 $isEdit = isset($inputName);
 $canReset = $isEdit && $imageSrc && $annotations;
 ?>
-<?php if ($imageSrc): ?>
+<?php if ($isEdit || $imageSrc): ?>
 <div class="image-annotate-container"
     data-image-src="<?php echo $this->escapeHtml($imageSrc); ?>"
     data-annotations="<?php echo $this->escapeHtml(json_encode($annotations)); ?>">

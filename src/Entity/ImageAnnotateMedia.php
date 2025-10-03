@@ -38,12 +38,12 @@ class ImageAnnotateMedia extends AbstractEntity
      */
     protected $media;
 
-    public function setMedia(Media $media) : void
+    public function setMedia(Media $media): void
     {
         $this->media = $media;
     }
 
-    public function getMedia() : Media
+    public function getMedia(): Media
     {
         return $this->media;
     }
@@ -56,12 +56,12 @@ class ImageAnnotateMedia extends AbstractEntity
      */
     protected $annotations;
 
-    public function setAnnotations(array $annotations) : void
+    public function setAnnotations(array $annotations): void
     {
         $this->annotations = $annotations;
     }
 
-    public function getAnnotations() : array
+    public function getAnnotations(): array
     {
         return $this->annotations;
     }

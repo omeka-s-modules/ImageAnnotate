@@ -2,70 +2,74 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
+# Translators:
+# Daniel Berthereau <daniel.transifex@berthereau.net>, 2024
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-03 11:55-0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2024-07-16 18:03+0000\n"
+"Last-Translator: Daniel Berthereau <daniel.transifex@berthereau.net>, 2024\n"
+"Language-Team: French (https://app.transifex.com/omeka/teams/14184/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #: Module.php:110
 msgid "Image annotations"
-msgstr ""
+msgstr "Annotations de l’image"
 
 #: Module.php:162 view/common/block-layout/image-annotate-asset-form.phtml:14
 #: view/common/block-layout/image-annotate-media-form.phtml:10
 msgid "Annotate image"
-msgstr ""
+msgstr "Annoter l’image"
 
 #: view/common/image-annotate.phtml:14
 msgid "Reset annotations"
-msgstr ""
+msgstr "Annuler les annotations"
 
 #: view/common/resource-page-block-layout/image-annotate-media.phtml:20
 msgid "View without annotations"
-msgstr ""
+msgstr "Voir sans les annotations"
 
 #: view/common/resource-page-block-layout/image-annotate-media.phtml:21
 msgid "View annotations"
-msgstr ""
+msgstr "Voir les annotations"
 
 #: src/Site/BlockLayout/ImageAnnotateAsset.php:24
 msgid "Image annotate asset"
-msgstr ""
+msgstr "Fichier de l’image annotée"
 
 #: src/Site/BlockLayout/ImageAnnotateMedia.php:31
 msgid "Image annotate media"
-msgstr ""
+msgstr "Média de l’image annotée"
 
 #: src/Site/BlockLayout/ImageAnnotateMedia.php:71
 msgid "Display title"
-msgstr ""
+msgstr "Titre à afficher"
 
 #: src/Site/BlockLayout/ImageAnnotateMedia.php:72
 msgid "No title"
-msgstr ""
+msgstr "Sans titre"
 
 #: src/Site/BlockLayout/ImageAnnotateMedia.php:74
 msgid "Item title"
-msgstr ""
+msgstr "Titre du contenu"
 
 #: src/Site/BlockLayout/ImageAnnotateMedia.php:75
 msgid "Media title"
-msgstr ""
+msgstr "Titre du média"
 
 #: src/Site/ResourcePageBlockLayout/ImageAnnotateItem.php:19
 msgid "Media embeds (with image annotations)"
-msgstr ""
+msgstr "Média embarqué (avec les annotations d’image)"
 
 #: src/Site/ResourcePageBlockLayout/ImageAnnotateMedia.php:19
 msgid "Media render (with image annotations)"
-msgstr ""
+msgstr "Rendu du média (avec les annotations d’image)"

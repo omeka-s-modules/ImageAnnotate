@@ -14,17 +14,17 @@ class ImageAnnotateItem implements ResourcePageBlockLayoutInterface
         $this->entityManager = $entityManager;
     }
 
-    public function getLabel() : string
+    public function getLabel(): string
     {
         return 'Media embeds (with image annotations)'; // @translate
     }
 
-    public function getCompatibleResourceNames() : array
+    public function getCompatibleResourceNames(): array
     {
         return ['items'];
     }
 
-    public function render(PhpRenderer $view, AbstractResourceEntityRepresentation $resource) : string
+    public function render(PhpRenderer $view, AbstractResourceEntityRepresentation $resource): string
     {
         $output = '';
         foreach ($resource->media() as $resource) {
