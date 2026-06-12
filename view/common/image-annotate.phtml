@@ -1,6 +1,7 @@
 <?php
 // Set an inputName to include markup used for editing annoations.
 $isEdit = isset($inputName);
+$imageAlt = $imageAlt ?? '';
 $canReset = $isEdit && $imageSrc && $annotations;
 ?>
 <?php if ($isEdit || $imageSrc): ?>
